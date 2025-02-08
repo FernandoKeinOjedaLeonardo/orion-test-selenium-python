@@ -28,7 +28,8 @@ class ProductTest(unittest.TestCase):
 
         product_page = ProductPage(self.driver)
 
-        product_name_1 = "Tooglebox Premium"
+        # Agregar primer producto
+        product_name_1 = "Google Workspace Enterprise Standard"
         product_page.search_and_submit(product_name_1)
         time.sleep(2)
         product_page.open_options_menu()
@@ -37,6 +38,7 @@ class ProductTest(unittest.TestCase):
         product_page.add_to_cart()
         product_page.continue_shopping()
 
+        # Agregar segundo producto
         product_name_2 = "Gemini Enterprise"
         product_page.search_and_submit(product_name_2)
         time.sleep(2)
@@ -46,29 +48,40 @@ class ProductTest(unittest.TestCase):
         product_page.add_to_cart()
         product_page.continue_shopping()
 
+        # Ir al carrito
         self.driver.find_element(By.XPATH, Locators.go_to_cart_button_xpath).click()
 
-        cart_product_names = self.driver.find_elements(By.XPATH, Locators.cart_product_names_xpath)
-        cart_product_prices = self.driver.find_elements(By.XPATH, Locators.cart_product_prices_xpath)
-        cart_total_price = self.driver.find_element(By.XPATH, Locators.cart_total_price_xpath).text
+        # Obtener nombre y precio del primer producto
+        product_name_cart_1 = self.driver.find_element(By.XPATH, Locators.cart_product_names_xpath).text
+        product_price_cart_1 = float(
+            self.driver.find_element(By.XPATH, Locators.cart_product_prices_xpath).text.replace("$", "").replace(",", ".").strip()
+        )
 
-        product_names = [name.text for name in cart_product_names]
-        product_prices = [float(price.text.replace("$", "").replace(",", "").strip()) for price in cart_product_prices]
-        total_price_calculated = sum(product_prices)
+        # Obtener nombre y precio del segundo producto
+        product_name_cart_2 = self.driver.find_element(By.XPATH, Locators.cart_product_names_two_xpath).text
+        product_price_cart_2 = float(
+            self.driver.find_element(By.XPATH, Locators.cart_product_prices_two_xpath).text.replace("$", "").replace(",", ".").strip()
+        )
 
-        self.assertIn(product_name_1, product_names, "Producto 1 no está en el carrito.")
-        self.assertIn(product_name_2, product_names, "Producto 2 no está en el carrito.")
+        # Validar nombres de productos
+        self.assertEqual(product_name_1, product_name_cart_1, "El primer producto no coincide en el carrito.")
+        self.assertEqual(product_name_2, product_name_cart_2, "El segundo producto no coincide en el carrito.")
 
-        self.assertEqual(total_price_calculated, float(cart_total_price.replace("$", "").replace(",", "").strip()),
-                         "El precio total en el carrito no coincide con la suma de los productos.")
+        # Validar precios y total
+        cart_total_price = float(
+            self.driver.find_element(By.XPATH, Locators.cart_total_price_xpath).text.replace("$", "").replace(",", ".").strip()
+        )
 
-        print("Productos agregados y validados correctamente.")
+        calculated_total_price = product_price_cart_1 + product_price_cart_2
 
+        self.assertEqual(
+            calculated_total_price,
+            cart_total_price,
+            msg="El precio total en el carrito no coincide con la suma de los productos."
+        )
+        time.sleep(2)
     @classmethod
     def tearDownClass(cls):
         cls.driver.close()
         cls.driver.quit()
         print("Test Completed")
-
-if __name__ == "__main__":
-    unittest.main()
