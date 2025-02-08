@@ -17,7 +17,7 @@ class ProductPage:
     def search_and_submit(self, product_name):
         search_box = self.driver.find_element(By.XPATH, self.search_box_xpath)
         search_box.clear()
-        search_box.send_keys(product_name + "\n")  # Presiona Enter para buscar
+        search_box.send_keys(product_name + "\n")
 
     def open_options_menu(self):
         WebDriverWait(self.driver, 10).until(

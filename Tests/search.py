@@ -9,7 +9,6 @@ from Pages.searchPage import SearchPage
 class SearchTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # Configuración inicial del navegador
         cls.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         cls.driver.get("https://dev.market.orion.global/es/store/")
         cls.driver.maximize_window()
